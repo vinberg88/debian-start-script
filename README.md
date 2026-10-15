@@ -107,7 +107,9 @@ budgie-desktop
 Only the two start helpers are included in this repository. Desktop packages
 are optional and are never installed by the scripts.
 
-Tested on DEBIAN 13 and works well via BUDIGE desktop for WSL2.
+Tested on DEBIAN 13 and works well via BUDIGE desktop for WSL2. 
+
+Look here: https://github.com/vinberg88/debian/blob/main/DEBIAN-13-BUDGIE.txt
 
 <p align="center">
 <a href="https://github.com/vinberg88/debian">
