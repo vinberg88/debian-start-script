@@ -133,4 +133,4 @@ Find more desktops here for WSL and DEBIAN 13 and DEBAIN 14
 </p>
 
 Regards,
-Mattias Vinberg
+Mattias Vinberg - StockHolm - Sweden - 2026
