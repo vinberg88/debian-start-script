@@ -1,7 +1,11 @@
-# Debian 13/14 WSL2 systemd namespace - Start any desktop via DEBIAN 
+# Debian 13/14 WSL2 systemd namespace - Start any desktop via DEBIAN and WSL2 
 
-<img width="850" height="250" alt="variant3_bold_gradient" src="https://github.com/user-attachments/assets/3e029862-0459-41ec-8ae5-0cc82e181636" />
+<p align="center">
+<a href="https://github.com/vinberg88/debian">
+<img width="850" height="250" alt="Debian" src="https://github.com/user-attachments/assets/3e029862-0459-41ec-8ae5-0cc82e181636" />
+</p>
 
+---
 
 Minimal start scripts for Debian 13 (Trixie) and Debian 14 (Forky) on WSL2.
 They keep the namespace-based systemd startup used by the original
