@@ -16,24 +16,48 @@ They keep the namespace-based systemd startup used by the original
 Debian 14 is still under development, so its support should be treated as
 provisional until the final release is available.
 
+This is the original Classic compatibility mode. Do not run it together with
+WSL's native systemd mode. `/etc/wsl.conf` must contain `systemd=false` under
+`[boot]` before the final WSL restart.
+
 ## Install
 
 Run inside Debian as a normal user in the `sudo` group:
 
 ```bash
 sudo apt update
-sudo apt install -y daemonize procps sudo systemd util-linux
+sudo apt install -y git daemonize procps sudo systemd util-linux
+
+cd ~
+git clone https://github.com/vinberg88/debian-start-script.git
+cd debian-start-script
 
 sudo install -o root -g root -m 0644 start-systemd-namespace /usr/sbin/start-systemd-namespace
 sudo install -o root -g root -m 0755 enter-systemd-namespace /usr/sbin/enter-systemd-namespace
 
-printf '%%sudo ALL=(ALL) NOPASSWD: /usr/sbin/enter-systemd-namespace\n' |
-  sudo tee /etc/sudoers.d/systemd-namespace >/dev/null
+sudo tee /etc/sudoers.d/systemd-namespace >/dev/null <<'EOF'
+Defaults env_keep += WSLPATH
+Defaults env_keep += WSLENV
+Defaults env_keep += WSL_INTEROP
+Defaults env_keep += WSL_DISTRO_NAME
+Defaults env_keep += PRE_NAMESPACE_PATH
+Defaults env_keep += PRE_NAMESPACE_PWD
+%sudo ALL=(ALL) NOPASSWD: /usr/sbin/enter-systemd-namespace
+EOF
 sudo chmod 0440 /etc/sudoers.d/systemd-namespace
 sudo visudo -cf /etc/sudoers.d/systemd-namespace
 
-grep -qxF 'source /usr/sbin/start-systemd-namespace' /etc/bash.bashrc ||
-  printf '\n# Start or enter the systemd namespace in WSL2\nsource /usr/sbin/start-systemd-namespace\n' |
+if grep -qE '^[[:space:]]*systemd[[:space:]]*=' /etc/wsl.conf 2>/dev/null; then
+  sudo sed -i 's/^[[:space:]]*systemd[[:space:]]*=.*/systemd=false/' /etc/wsl.conf
+elif grep -q '^\[boot\]' /etc/wsl.conf 2>/dev/null; then
+  sudo sed -i '/^\[boot\]/a systemd=false' /etc/wsl.conf
+else
+  printf '\n[boot]\nsystemd=false\n' | sudo tee -a /etc/wsl.conf >/dev/null
+fi
+
+sudo sed -i '/^[[:space:]]*source \/usr\/sbin\/start-systemd-namespace[[:space:]]*$/d' /etc/bash.bashrc
+grep -qxF '[ -r /usr/sbin/start-systemd-namespace ] && source /usr/sbin/start-systemd-namespace' /etc/bash.bashrc ||
+  printf '\n# Start or enter the systemd namespace in WSL2\n[ -r /usr/sbin/start-systemd-namespace ] && source /usr/sbin/start-systemd-namespace\n' |
   sudo tee -a /etc/bash.bashrc >/dev/null
 ```
 
@@ -41,8 +65,10 @@ Close Debian, run `wsl --shutdown` in Windows PowerShell, and open Debian again.
 Verify with:
 
 ```bash
-systemctl is-system-running
+ps -p 1 -o pid,comm,args
 ```
+
+A working namespace shows `/lib/systemd/systemd --unit=basic.target` as PID 1.
 
 Only the two start helpers are included; desktop installation and launch
 commands intentionally stay outside this repository.
