@@ -1,6 +1,6 @@
-# Debian 13/14 WSL2 systemd namespace 
+# Debian 13 / 14 WSL2 systemd namespace 
 
-Start any desktop via DEBIAN and WSL2 and WINDOWS 11 =}
+Start any desktop via DEBIAN 13 / 14 and WSL2 and WINDOWS 11 =}
 
 <p align="center">
 <a href="https://github.com/vinberg88/debian">
