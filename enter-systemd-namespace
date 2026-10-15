@@ -42,19 +42,25 @@ if [ -n "$SYSTEMD_PID" ] && [ "$SYSTEMD_PID" != "1" ]; then
         /usr/bin/systemctl start \
         "user-runtime-dir@$USER_ID.service" "user@$USER_ID.service"
 
+    /usr/bin/nsenter -t "$SYSTEMD_PID" -a \
+        /usr/bin/install -d -o root -g root -m 1777 \
+        /tmp/.ICE-unix /tmp/.X11-unix
+
+    SESSION_SETUP='set -a; [ -f "$HOME/.systemd-env" ] && source "$HOME/.systemd-env"; set +a'
+    SESSION_SETUP="$SESSION_SETUP; export XDG_RUNTIME_DIR=$(printf '%q' "$USER_RUNTIME_DIR")"
+    SESSION_SETUP="$SESSION_SETUP; export DBUS_SESSION_BUS_ADDRESS=$(printf '%q' "unix:path=$USER_RUNTIME_DIR/bus")"
+    SESSION_SETUP="$SESSION_SETUP; export PRE_NAMESPACE_PATH=$(printf '%q' "$PRE_NAMESPACE_PATH")"
+    SESSION_SETUP="$SESSION_SETUP; export PRE_NAMESPACE_PWD=$(printf '%q' "$PRE_NAMESPACE_PWD")"
+
     if [ -n "$1" ] && [ "$1" != "bash --login" ] && [ "$1" != "/bin/bash --login" ]; then
-        exec /usr/bin/nsenter -t "$SYSTEMD_PID" -a \
-            /usr/bin/sudo -H -u "$SUDO_USER" \
-            /usr/bin/env \
-            NAMESPACE_RUNTIME_DIR="$USER_RUNTIME_DIR" \
-            /bin/bash -c 'set -a; [ -f "$HOME/.systemd-env" ] && source "$HOME/.systemd-env"; set +a; export XDG_RUNTIME_DIR="$NAMESPACE_RUNTIME_DIR"; export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"; unset NAMESPACE_RUNTIME_DIR; exec bash -c '"$(printf "%q" "$@")"
+        USER_COMMAND="$SESSION_SETUP; exec /bin/bash -c $(printf '%q' "$@")"
     else
-        exec /usr/bin/nsenter -t "$SYSTEMD_PID" -a \
-            /usr/bin/sudo -H -u "$SUDO_USER" \
-            /usr/bin/env \
-            NAMESPACE_RUNTIME_DIR="$USER_RUNTIME_DIR" \
-            /bin/bash -c 'set -a; [ -f "$HOME/.systemd-env" ] && source "$HOME/.systemd-env"; set +a; export XDG_RUNTIME_DIR="$NAMESPACE_RUNTIME_DIR"; export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"; unset NAMESPACE_RUNTIME_DIR; exec /bin/bash --login'
+        USER_COMMAND="$SESSION_SETUP; exec /bin/bash --login"
     fi
+
+    exec /usr/bin/nsenter -t "$SYSTEMD_PID" -a \
+        /usr/sbin/runuser --pty -l "$SUDO_USER" -c "$USER_COMMAND"
+
     echo "Existential crisis"
     exit 1
 fi
