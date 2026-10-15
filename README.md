@@ -77,7 +77,7 @@ The smaller Budgie installation used for the verified Debian 13 test was:
 ```bash
 sudo apt update
 sudo apt install budgie-desktop
-sudo apt install 'budgie*'
+sudo apt install budgie*
 ```
 
 GNOME Terminal is a reliable optional terminal for this setup:
