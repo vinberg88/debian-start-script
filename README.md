@@ -70,6 +70,15 @@ ps -p 1 -o pid,comm,args
 
 A working namespace shows `/lib/systemd/systemd --unit=basic.target` as PID 1.
 
+---
+
+<p align="center">
+<a href="https://github.com/vinberg88">
+<img width="1013" height="243" alt="Github" src="https://github.com/user-attachments/assets/e52d4101-bf08-4cdf-ae06-13cb4890d0b9" />
+</p>
+
+---
+
 ## Optional Budgie desktop
 
 The smaller Budgie installation used for the verified Debian 13 test was:
