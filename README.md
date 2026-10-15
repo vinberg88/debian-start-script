@@ -20,6 +20,15 @@ This is the original Classic compatibility mode. Do not run it together with
 WSL's native systemd mode. `/etc/wsl.conf` must contain `systemd=false` under
 `[boot]` before the final WSL restart.
 
+On debian 14 wayland is comming and we are working on fix for that.
+
+<p align="center">
+<a href="https://github.com/vinberg88/debian">
+<img width="800" height="500" alt="debian14" src="https://github.com/user-attachments/assets/20c4e3ca-d016-49c1-9e0b-e85a64590fa9" />
+</p>
+
+---
+
 ## Install
 
 Run inside Debian as a normal user in the `sudo` group:
