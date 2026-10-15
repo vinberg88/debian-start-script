@@ -70,5 +70,39 @@ ps -p 1 -o pid,comm,args
 
 A working namespace shows `/lib/systemd/systemd --unit=basic.target` as PID 1.
 
-Only the two start helpers are included; desktop installation and launch
-commands intentionally stay outside this repository.
+## Optional Budgie desktop
+
+The smaller Budgie installation used for the verified Debian 13 test was:
+
+```bash
+sudo apt update
+sudo apt install budgie-desktop
+sudo apt install 'budgie*'
+```
+
+GNOME Terminal is a reliable optional terminal for this setup:
+
+```bash
+sudo apt install gnome-terminal
+```
+
+For the complete package selection, including suggested packages (this can use
+considerably more disk space):
+
+```bash
+sudo apt install --install-suggests budgie-desktop
+```
+
+With a Windows X server already running, start the X11 session from the Debian
+terminal entered through the systemd namespace:
+
+```bash
+export DISPLAY="$(ip route show default | awk '/default/ {print $3; exit}'):0.0"
+export XDG_SESSION_TYPE=x11
+export GDK_BACKEND=x11
+unset WAYLAND_DISPLAY
+budgie-desktop
+```
+
+Only the two start helpers are included in this repository. Desktop packages
+are optional and are never installed by the scripts.
